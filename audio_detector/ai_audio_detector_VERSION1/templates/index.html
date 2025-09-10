@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Audio Detector - Advanced Audio Analysis</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: rgba(15, 52, 96, 0.3);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1rem 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo i {
+            font-size: 2rem;
+            color: #00ffff;
+        }
+
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #00ffff, #ff6b6b);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 0;
+        }
+
+        .upload-section {
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .upload-card {
+            background: rgba(26, 26, 46, 0.7);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 3rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .upload-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 255, 255, 0.1);
+        }
+
+        .upload-zone {
+            border: 2px dashed #00ffff;
+            border-radius: 15px;
+            padding: 3rem 2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-zone:hover {
+            border-color: #ff6b6b;
+            background: rgba(0, 255, 255, 0.05);
+        }
+
+        .upload-zone.dragover {
+            border-color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.1);
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 4rem;
+            color: #00ffff;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .upload-zone:hover .upload-icon {
+            color: #ff6b6b;
+            transform: scale(1.1);
+        }
+
+        .upload-content h2 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: #ffffff;
+        }
+
+        .upload-content p {
+            color: #a0a0a0;
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+        }
+
+        .supported-formats {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        .format-tag {
+            background: rgba(0, 255, 255, 0.2);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 20px;
+            padding: 0.3rem 0.8rem;
+            font-size: 0.8rem;
+            color: #00ffff;
+            font-weight: 600;
+        }
+
+        .upload-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 0.8rem 2rem;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #0f3460, #00ffff);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 255, 255, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid #ff6b6b;
+            color: #ff6b6b;
+        }
+
+        .btn-secondary:hover {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .processing {
+            display: none;
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .processing-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(0, 255, 255, 0.3);
+            border-top: 3px solid #00ffff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ffff, #ff6b6b);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .footer {
+            background: rgba(15, 52, 96, 0.3);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1rem 0;
+            text-align: center;
+            color: #a0a0a0;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+
+            .upload-card {
+                padding: 2rem 1.5rem;
+            }
+
+            .upload-zone {
+                padding: 2rem 1rem;
+            }
+
+            .upload-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-brain"></i>
+                    <h1>AI Audio Detector</h1>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <section class="upload-section">
+                <div class="upload-card">
+                    <form id="uploadForm" action="/upload" method="post" enctype="multipart/form-data">
+                        <div class="upload-zone" id="uploadZone">
+                            <div class="upload-content">
+                                <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                                <h2>Upload Audio File</h2>
+                                <p>Drag and drop your audio file here or click to browse</p>
+
+                                <div class="supported-formats">
+                                    <span class="format-tag">MP3</span>
+                                    <span class="format-tag">WAV</span>
+                                    <span class="format-tag">FLAC</span>
+                                    <span class="format-tag">M4A</span>
+                                    <span class="format-tag">OGG</span>
+                                </div>
+
+                                <div class="upload-buttons">
+                                    <button type="button" class="btn btn-primary" id="browseBtn">
+                                        <i class="fas fa-folder-open"></i>
+                                        Browse Files
+                                    </button>
+                                    <button type="button" class="btn btn-secondary">
+                                        <i class="fas fa-microphone"></i>
+                                        Use Sample Audio
+                                    </button>
+                                </div>
+                            </div>
+
+                            <input type="file" id="fileInput" name="file" class="file-input" 
+                                   accept=".mp3,.wav,.flac,.m4a,.ogg">
+                        </div>
+                    </form>
+
+                    <div class="processing" id="processingDiv">
+                        <div class="processing-spinner"></div>
+                        <h3>Analyzing Audio...</h3>
+                        <p id="processingStep">Validating audio file</p>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 AI Audio Detector. Advanced audio analysis powered by machine learning.</p>
+        </div>
+    </footer>
+
+    <script>
+        class AudioUploader {
+            constructor() {
+                this.uploadZone = document.getElementById('uploadZone');
+                this.fileInput = document.getElementById('fileInput');
+                this.browseBtn = document.getElementById('browseBtn');
+                this.uploadForm = document.getElementById('uploadForm');
+                this.processingDiv = document.getElementById('processingDiv');
+                this.progressFill = document.getElementById('progressFill');
+                this.processingStep = document.getElementById('processingStep');
+
+                this.processingSteps = [
+                    "Validating audio file",
+                    "Extracting audio features", 
+                    "Computing MFCC coefficients",
+                    "Analyzing spectral characteristics",
+                    "Running AI detection model",
+                    "Calculating confidence scores",
+                    "Generating visualizations"
+                ];
+
+                this.init();
+            }
+
+            init() {
+                this.setupEventListeners();
+            }
+
+            setupEventListeners() {
+                // Browse button click
+                this.browseBtn.addEventListener('click', () => {
+                    this.fileInput.click();
+                });
+
+                // File input change
+                this.fileInput.addEventListener('change', (e) => {
+                    this.handleFileSelect(e.target.files);
+                });
+
+                // Drag and drop
+                this.uploadZone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    this.uploadZone.classList.add('dragover');
+                });
+
+                this.uploadZone.addEventListener('dragleave', () => {
+                    this.uploadZone.classList.remove('dragover');
+                });
+
+                this.uploadZone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    this.uploadZone.classList.remove('dragover');
+                    this.handleFileSelect(e.dataTransfer.files);
+                });
+
+                // Form submission
+                this.uploadForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.processFile();
+                });
+            }
+
+            handleFileSelect(files) {
+                if (files.length > 0) {
+                    const file = files[0];
+                    if (this.validateFile(file)) {
+                        this.fileInput.files = files;
+                        this.processFile();
+                    }
+                }
+            }
+
+            validateFile(file) {
+                const allowedTypes = ['audio/mp3', 'audio/mpeg', 'audio/wav', 'audio/flac', 'audio/m4a', 'audio/ogg'];
+                const allowedExtensions = ['.mp3', '.wav', '.flac', '.m4a', '.ogg'];
+
+                const fileName = file.name.toLowerCase();
+                const isValidExtension = allowedExtensions.some(ext => fileName.endsWith(ext));
+
+                if (!isValidExtension) {
+                    alert('Please select a valid audio file (MP3, WAV, FLAC, M4A, OGG)');
+                    return false;
+                }
+
+                if (file.size > 50 * 1024 * 1024) { // 50MB limit
+                    alert('File size must be less than 50MB');
+                    return false;
+                }
+
+                return true;
+            }
+
+            async processFile() {
+                // Show processing UI
+                this.uploadZone.style.display = 'none';
+                this.processingDiv.style.display = 'block';
+
+                // Simulate processing steps
+                for (let i = 0; i < this.processingSteps.length; i++) {
+                    this.processingStep.textContent = this.processingSteps[i];
+                    this.progressFill.style.width = `${((i + 1) / this.processingSteps.length) * 100}%`;
+                    await this.sleep(800);
+                }
+
+                // Submit form
+                this.uploadForm.submit();
+            }
+
+            sleep(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+        }
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            new AudioUploader();
+        });
+    </script>
+</body>
+</html>
