@@ -134,7 +134,9 @@ def plot_frequency_analysis(audio_path, output_img):
 @app.route('/')
 def index():
     return render_template('index.html')
-
+@app.route('/audio')
+def audio_page():
+    return render_template('audio.html')
 @app.route('/upload', methods=['POST'])
 def upload_file():
     if 'file' not in request.files:
