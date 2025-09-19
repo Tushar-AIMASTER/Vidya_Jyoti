@@ -6,10 +6,10 @@ class Config:
     """Configuration class for Flask app"""
     
     # Flask configuration
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'your-secret-key-change-in-production'
+    SECRET_KEY = os.environ.get('SECRET_KEY') or '8bfb924923afd744808e5afb949e3fa7c007eafea317d5d8'
     
     # News API configurations
-    NEWS_API_KEY = os.environ.get('NEWS_API_KEY') or 'your-newsapi-key'
+    NEWS_API_KEY = os.environ.get('NEWS_API_KEY') or '8b335dc6442443eca479b1bf193cfc68'
     
     # Google Fact Check API (optional - free tier available)
     GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY') or None
