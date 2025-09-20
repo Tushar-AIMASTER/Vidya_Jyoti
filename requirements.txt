@@ -16,5 +16,4 @@ librosa
 matplotlib
 soundfile
 transformers
-torch
 joblib
