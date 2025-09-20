@@ -1,4 +1,12 @@
 [build]
-  command = "python run.py"
-  publish = "build/"
-  environment = { PYTHON_VERSION = "3.9.13" }
+  publish = "static"
+  functions = "netlify/functions"
+  command = "pip install -r requirements.txt"
+
+[[redirects]]
+  from = "/*"
+  to = "/.netlify/functions/api"
+  status = 200
+
+[functions]
+  directory = "netlify/functions"
