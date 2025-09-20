@@ -17,3 +17,4 @@ matplotlib
 soundfile
 transformers
 joblib
+gunicorn
