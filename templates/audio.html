@@ -191,10 +191,12 @@
                     
                     const response = await fetch('/upload', {
                         method: 'POST',
-                        body: formData
+                        body: formData,
+                        redirect: 'follow'  // Follow redirects automatically
                     });
                     
                     if (response.ok) {
+                        // Redirect to the audio result page
                         window.location.href = '/audio_result';
                     } else {
                         const error = await response.json();

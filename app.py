@@ -1,5 +1,5 @@
 
-from flask import Flask, render_template, request, jsonify, flash
+from flask import Flask, render_template, request, jsonify, flash, session, redirect, url_for
 import json
 import logging
 import os
@@ -15,6 +15,7 @@ from config import Config
 
 app = Flask(__name__)
 app.config.from_object(Config)
+app.secret_key = 'your-secret-key-here'  # Add secret key for sessions
 
 # Audio upload configuration
 app.config['UPLOAD_FOLDER'] = 'uploads'
@@ -239,13 +240,25 @@ def upload_file():
                 }
             }
 
-            return render_template('audio_result.html', **result_data)
+            # Store result in session and redirect
+            session['audio_result'] = result_data
+            return redirect(url_for('audio_result'))
 
         except Exception as e:
             logger.error(f"Error processing audio: {str(e)}")
             return jsonify({'error': f'Error processing audio: {str(e)}'}), 500
 
     return jsonify({'error': 'Invalid file format'}), 400
+
+@app.route('/audio_result')
+def audio_result():
+    """Display audio analysis results"""
+    if 'audio_result' not in session:
+        flash('No audio analysis results found. Please upload an audio file first.', 'warning')
+        return redirect(url_for('audio_page'))
+    
+    result_data = session['audio_result']
+    return render_template('audio_result.html', **result_data)
 
 @app.route('/api/analyze', methods=['POST'])
 def api_analyze():
