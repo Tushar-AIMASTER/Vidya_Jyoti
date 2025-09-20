@@ -1,43 +1,73 @@
 /* Custom styles for Vidya Jyoti - Unified Platform */
 
 body {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #FFE066 0%, #FFB366 50%, #FF69B4 100%);
     min-height: 100vh;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #2c3e50;
 }
 
 /* Navigation */
+.navbar {
+    background: rgba(0, 0, 0, 0.8) !important;
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
 .navbar-brand {
     font-size: 1.5rem;
     font-weight: bold;
 }
 
+.navbar-nav .nav-link {
+    color: white !important;
+    transition: all 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #FFD700 !important;
+    transform: translateY(-2px);
+}
+
+.navbar-toggler {
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.8%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
 /* Hero Section */
 .hero-section {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(10px);
     padding: 120px 0 80px;
     margin-top: 56px;
+    border-radius: 20px;
+    margin: 56px 20px 0 20px;
 }
 
 .hero-title {
     font-size: 3.5rem;
     font-weight: bold;
-    color: white;
+    color: #2c3e50;
     margin-bottom: 1rem;
+    text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8);
 }
 
 .hero-subtitle {
     font-size: 1.5rem;
-    color: rgba(255, 255, 255, 0.9);
+    color: #34495e;
     margin-bottom: 1rem;
+    font-weight: 600;
 }
 
 .hero-description {
     font-size: 1.1rem;
-    color: rgba(255, 255, 255, 0.8);
+    color: #2c3e50;
     max-width: 600px;
     margin: 0 auto;
+    font-weight: 500;
 }
 
 /* Gradient backgrounds */
@@ -52,7 +82,9 @@ body {
 .card {
     border: none;
     border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
 }
 
 .card-header {
@@ -141,19 +173,20 @@ body {
     padding: 3rem 2rem;
     cursor: pointer;
     transition: all 0.3s ease;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.3);
     backdrop-filter: blur(10px);
+    color: #2c3e50;
 }
 
 .upload-zone:hover {
     border-color: #20c997;
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.4);
     transform: translateY(-5px);
 }
 
 .upload-zone.dragover {
     border-color: #20c997;
-    background: rgba(32, 201, 151, 0.2);
+    background: rgba(32, 201, 151, 0.3);
     transform: scale(1.02);
 }
 
@@ -200,5 +233,320 @@ body {
     
     .hero-section {
         padding: 100px 0 60px;
+    }
+}
+
+#logo {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 20px;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+    float: left;
+}
+
+#logo-text {
+    font-size: 40px;
+    font-weight: bold;
+    text-decoration: none;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #ffffff;
+    text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8);
+}
+#logo-home {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 10px;
+    margin-left: 10px;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+    float: left;
+    
+}
+#logo-text-home {
+    font-size: 50px;
+    font-weight: bold;
+    text-decoration: none;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #2c3e50;
+    text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8);
+    float: left;
+}
+
+/* Team Section Styles */
+.team-section {
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 60px 40px;
+    border-radius: 20px;
+    margin: 40px 0;
+    backdrop-filter: blur(10px);
+}
+
+.team-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.team-title {
+    font-size: 3rem;
+    font-weight: bold;
+    color: white;
+    margin: 0;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.team-subtitle {
+    font-size: 1.2rem;
+    color: white;
+    margin-bottom: 40px;
+    text-decoration: underline;
+    text-underline-offset: 8px;
+}
+
+.team-leader {
+    margin-bottom: 50px;
+}
+
+.team-member-card {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 30px;
+    margin-bottom: 30px;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    flex: 0 0 300px;
+    min-width: 300px;
+}
+
+.team-member-card:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.leader-card {
+    background: rgba(255, 255, 255, 0.15);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.member-image {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.member-photo {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    transition: all 0.3s ease;
+}
+
+.member-photo:hover {
+    transform: scale(1.05);
+    border-color: rgba(255, 255, 255, 0.6);
+}
+
+.member-info {
+    text-align: center;
+}
+
+.member-name {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: white;
+    margin-bottom: 15px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.member-role {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.role-badge {
+    background: white;
+    color: #2c3e50;
+    padding: 8px 20px;
+    border-radius: 25px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.leader-badge {
+    background: linear-gradient(45deg, #FFD700, #FFA500);
+    color: #2c3e50;
+    font-weight: bold;
+}
+
+.linkedin-link {
+    background: white;
+    color: #0077B5;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.linkedin-link:hover {
+    background: #0077B5;
+    color: white;
+    transform: scale(1.1);
+}
+
+.member-bio {
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.6;
+    font-size: 1rem;
+    text-align: left;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.team-members {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 20px;
+    margin-top: 30px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+}
+
+/* Section Backgrounds - Navbar Style */
+.news-verification-section {
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 40px;
+    margin: 40px 0;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.audio-verification-section {
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 40px;
+    margin: 40px 0;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.contact-us-section {
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 40px;
+    margin: 40px 0;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Update card headers for better contrast on dark background */
+.news-verification-section .card-header,
+.audio-verification-section .card-header,
+.contact-us-section .card-header {
+    background: linear-gradient(45deg, #2196F3, #21CBF3) !important;
+    border: none;
+}
+
+/* Update card body for better visibility on dark background */
+.news-verification-section .card,
+.audio-verification-section .card,
+.contact-us-section .card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+}
+
+/* Update text colors for better contrast */
+.news-verification-section .card-title,
+.audio-verification-section .card-title,
+.contact-us-section .card-title {
+    color: white !important;
+}
+
+.news-verification-section .card-text,
+.audio-verification-section .card-text,
+.contact-us-section .card-text {
+    color: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* Contact info styling */
+.contact-info {
+    padding: 20px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.contact-info:hover {
+    transform: translateY(-5px);
+}
+
+.contact-info i {
+    transition: all 0.3s ease;
+}
+
+.contact-info:hover i {
+    transform: scale(1.1);
+}
+
+/* Responsive Design for Team Section */
+@media (max-width: 768px) {
+    .team-section {
+        padding: 40px 20px;
+        margin: 20px 0;
+    }
+    
+    .team-title {
+        font-size: 2rem;
+    }
+    
+    .member-photo {
+        width: 150px;
+        height: 150px;
+    }
+    
+    .team-member-card {
+        padding: 20px;
+        flex: 0 0 calc(50% - 10px);
+        min-width: 280px;
+        margin-bottom: 20px;
+    }
+    
+    .team-members {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .member-role {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    /* Responsive adjustments for section backgrounds */
+    .news-verification-section,
+    .audio-verification-section,
+    .contact-us-section {
+        padding: 20px;
+        margin: 20px 0;
     }
 }
