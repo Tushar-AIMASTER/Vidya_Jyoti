@@ -1,9 +1,52 @@
-/* Custom styles for News Headline Verifier */
+/* Custom styles for Vidya Jyoti - Unified Platform */
 
 body {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     min-height: 100vh;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Navigation */
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+/* Hero Section */
+.hero-section {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    padding: 120px 0 80px;
+    margin-top: 56px;
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: bold;
+    color: white;
+    margin-bottom: 1rem;
+}
+
+.hero-subtitle {
+    font-size: 1.5rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 1rem;
+}
+
+.hero-description {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.8);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Gradient backgrounds */
+.bg-gradient-primary {
+    background: linear-gradient(45deg, #2196F3, #21CBF3) !important;
+}
+
+.bg-gradient-success {
+    background: linear-gradient(45deg, #28a745, #20c997) !important;
 }
 
 .card {
@@ -89,4 +132,73 @@ body {
     0% { transform: scale(1); }
     50% { transform: scale(1.05); }
     100% { transform: scale(1); }
+}
+
+/* Audio Upload Zone */
+.upload-zone {
+    border: 3px dashed #28a745;
+    border-radius: 20px;
+    padding: 3rem 2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.upload-zone:hover {
+    border-color: #20c997;
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-5px);
+}
+
+.upload-zone.dragover {
+    border-color: #20c997;
+    background: rgba(32, 201, 151, 0.2);
+    transform: scale(1.02);
+}
+
+.upload-content {
+    text-align: center;
+}
+
+.supported-formats {
+    margin-top: 1rem;
+}
+
+.supported-formats .badge {
+    margin: 0.2rem;
+    padding: 0.5rem 1rem;
+}
+
+/* Features Section */
+.features-section {
+    margin-top: 4rem;
+}
+
+.features-section .card {
+    height: 100%;
+    transition: transform 0.3s ease;
+}
+
+.features-section .card:hover {
+    transform: translateY(-10px);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.2rem;
+    }
+    
+    .upload-zone {
+        padding: 2rem 1rem;
+    }
+    
+    .hero-section {
+        padding: 100px 0 60px;
+    }
 }

@@ -1,10 +1,19 @@
-// JavaScript for News Headline Verifier
+// JavaScript for Vidya Jyoti - Unified Platform
 
 document.addEventListener('DOMContentLoaded', function() {
+    // News verification elements
     const form = document.getElementById('verificationForm');
     const verifyBtn = document.getElementById('verifyBtn');
     const spinner = document.getElementById('spinner');
-    const resultsDiv = document.getElementById('results');
+    const resultsDiv = document.getElementById('news-results');
+    
+    // Audio upload elements
+    const audioForm = document.getElementById('audioForm');
+    const audioBtn = document.getElementById('audioBtn');
+    const audioSpinner = document.getElementById('audioSpinner');
+    const uploadZone = document.getElementById('uploadZone');
+    const audioFileInput = document.getElementById('audioFile');
+    const audioResults = document.getElementById('audio-results');
     
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
@@ -152,4 +161,132 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }, 5000);
     }
+    
+    // ==================== AUDIO UPLOAD FUNCTIONALITY ====================
+    
+    // Audio file upload handling
+    if (audioForm) {
+        audioForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            if (!audioFileInput.files[0]) {
+                showAlert('Please select an audio file to analyze.', 'warning');
+                return;
+            }
+            
+            setAudioLoadingState(true);
+            
+            try {
+                const formData = new FormData();
+                formData.append('file', audioFileInput.files[0]);
+                
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (response.ok) {
+                    // Redirect to results page
+                    window.location.href = '/audio_result';
+                } else {
+                    const error = await response.json();
+                    showAlert(error.error || 'Audio analysis failed', 'danger');
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('Network error. Please try again.', 'danger');
+            } finally {
+                setAudioLoadingState(false);
+            }
+        });
+    }
+    
+    // Audio file drag and drop
+    if (uploadZone) {
+        uploadZone.addEventListener('click', () => audioFileInput.click());
+        
+        uploadZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadZone.classList.add('dragover');
+        });
+        
+        uploadZone.addEventListener('dragleave', () => {
+            uploadZone.classList.remove('dragover');
+        });
+        
+        uploadZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadZone.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleAudioFileSelect(files[0]);
+            }
+        });
+    }
+    
+    if (audioFileInput) {
+        audioFileInput.addEventListener('change', (e) => {
+            if (e.target.files[0]) {
+                handleAudioFileSelect(e.target.files[0]);
+            }
+        });
+    }
+    
+    function handleAudioFileSelect(file) {
+        const allowedTypes = ['audio/mp3', 'audio/mpeg', 'audio/wav', 'audio/flac', 'audio/m4a', 'audio/ogg'];
+        const allowedExtensions = ['.mp3', '.wav', '.flac', '.m4a', '.ogg'];
+        
+        const fileName = file.name.toLowerCase();
+        const isValidExtension = allowedExtensions.some(ext => fileName.endsWith(ext));
+        
+        if (!isValidExtension) {
+            showAlert('Please select a valid audio file (MP3, WAV, FLAC, M4A, OGG)', 'warning');
+            return;
+        }
+        
+        if (file.size > 50 * 1024 * 1024) { // 50MB limit
+            showAlert('File size must be less than 50MB', 'warning');
+            return;
+        }
+        
+        // Update UI to show selected file
+        const uploadContent = uploadZone.querySelector('.upload-content');
+        uploadContent.innerHTML = `
+            <i class="fas fa-file-audio fa-3x text-success mb-3"></i>
+            <h5>File Selected</h5>
+            <p class="text-muted">${file.name}</p>
+            <small class="text-success">Ready for analysis</small>
+        `;
+        
+        audioBtn.disabled = false;
+    }
+    
+    function setAudioLoadingState(loading) {
+        if (loading) {
+            audioBtn.disabled = true;
+            audioSpinner.classList.remove('d-none');
+            audioBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Analyzing...';
+        } else {
+            audioBtn.disabled = false;
+            audioSpinner.classList.add('d-none');
+            audioBtn.innerHTML = '<i class="fas fa-brain me-2"></i>Analyze Audio';
+        }
+    }
+    
+    // ==================== NAVIGATION SMOOTH SCROLLING ====================
+    
+    // Smooth scrolling for navigation links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
 });

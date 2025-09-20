@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Analysis Results - Vidya Jyoti</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .result-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        .prediction-badge {
+            font-size: 1.5rem;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-weight: bold;
+        }
+        
+        .prediction-real {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+        }
+        
+        .prediction-fake {
+            background: linear-gradient(45deg, #dc3545, #fd7e14);
+            color: white;
+        }
+        
+        .visualization-card {
+            background: #1a1a2e;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+        
+        .visualization-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .visualization-card img {
+            width: 100%;
+            height: auto;
+            border-radius: 15px;
+        }
+        
+        .feature-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            backdrop-filter: blur(5px);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-shield-alt me-2"></i>
+                <strong>Vidya Jyoti</strong>
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/">
+                    <i class="fas fa-home me-1"></i>Back to Home
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <!-- Header -->
+                <div class="text-center mb-4">
+                    <h1 class="text-white">
+                        <i class="fas fa-microphone-alt me-3"></i>
+                        Audio Analysis Results
+                    </h1>
+                    <p class="text-white-50">File: <strong>{{ filename }}</strong></p>
+                </div>
+
+                <!-- Prediction Result -->
+                <div class="card result-card mb-4">
+                    <div class="card-body text-center p-5">
+                        <h2 class="mb-4">Detection Result</h2>
+                        <div class="prediction-badge {{ 'prediction-real' if prediction == 'REAL_HUMAN' else 'prediction-fake' }}">
+                            {% if prediction == 'REAL_HUMAN' %}
+                                <i class="fas fa-user-check me-2"></i>REAL HUMAN VOICE
+                            {% else %}
+                                <i class="fas fa-robot me-2"></i>AI GENERATED
+                            {% endif %}
+                        </div>
+                        <div class="mt-3">
+                            <h3>Confidence: {{ confidence }}</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Audio Features -->
+                <div class="card result-card mb-4">
+                    <div class="card-header">
+                        <h3><i class="fas fa-chart-line me-2"></i>Audio Features</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="feature-item">
+                                    <strong>Duration:</strong> {{ "%.2f"|format(features.duration) }} seconds
+                                </div>
+                                <div class="feature-item">
+                                    <strong>Sample Rate:</strong> {{ features.sample_rate }} Hz
+                                </div>
+                                <div class="feature-item">
+                                    <strong>RMS Energy:</strong> {{ "%.4f"|format(features.rms_energy) }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="feature-item">
+                                    <strong>Spectral Centroid:</strong> {{ "%.2f"|format(features.spectral_centroid) }} Hz
+                                </div>
+                                <div class="feature-item">
+                                    <strong>Spectral Bandwidth:</strong> {{ "%.2f"|format(features.spectral_bandwidth) }} Hz
+                                </div>
+                                <div class="feature-item">
+                                    <strong>Zero Crossing Rate:</strong> {{ "%.4f"|format(features.zero_crossing_rate) }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <div class="feature-item">
+                                    <strong>Tempo:</strong> {{ "%.2f"|format(features.tempo) }} BPM
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Visualizations -->
+                <div class="card result-card mb-4">
+                    <div class="card-header">
+                        <h3><i class="fas fa-images me-2"></i>Audio Visualizations</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <div class="visualization-card">
+                                    <img src="{{ url_for('static', filename=visualizations.waveform.split('/')[-1]) }}" 
+                                         alt="Waveform" class="img-fluid">
+                                    <div class="p-3">
+                                        <h5 class="text-white mb-0">Waveform</h5>
+                                        <small class="text-white-50">Time domain representation</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <div class="visualization-card">
+                                    <img src="{{ url_for('static', filename=visualizations.spectrogram.split('/')[-1]) }}" 
+                                         alt="Spectrogram" class="img-fluid">
+                                    <div class="p-3">
+                                        <h5 class="text-white mb-0">Spectrogram</h5>
+                                        <small class="text-white-50">Frequency over time</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <div class="visualization-card">
+                                    <img src="{{ url_for('static', filename=visualizations.mfcc.split('/')[-1]) }}" 
+                                         alt="MFCC" class="img-fluid">
+                                    <div class="p-3">
+                                        <h5 class="text-white mb-0">MFCC Features</h5>
+                                        <small class="text-white-50">Mel-frequency cepstral coefficients</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <div class="visualization-card">
+                                    <img src="{{ url_for('static', filename=visualizations.frequency.split('/')[-1]) }}" 
+                                         alt="Frequency Analysis" class="img-fluid">
+                                    <div class="p-3">
+                                        <h5 class="text-white mb-0">Frequency Analysis</h5>
+                                        <small class="text-white-50">Frequency domain analysis</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analysis Summary -->
+                <div class="card result-card mb-4">
+                    <div class="card-header">
+                        <h3><i class="fas fa-info-circle me-2"></i>Analysis Summary</h3>
+                    </div>
+                    <div class="card-body">
+                        {% if prediction == 'REAL_HUMAN' %}
+                            <div class="alert alert-success">
+                                <i class="fas fa-check-circle me-2"></i>
+                                <strong>This audio appears to be from a real human voice.</strong>
+                                The analysis shows characteristics consistent with natural human speech patterns.
+                            </div>
+                        {% else %}
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                <strong>This audio appears to be AI-generated or synthetic.</strong>
+                                The analysis detected patterns that are typically associated with artificial voice generation.
+                            </div>
+                        {% endif %}
+                        
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <h5>Technical Analysis:</h5>
+                                <ul class="list-unstyled">
+                                    <li><i class="fas fa-check me-2 text-success"></i>Audio feature extraction completed</li>
+                                    <li><i class="fas fa-check me-2 text-success"></i>Machine learning model analysis performed</li>
+                                    <li><i class="fas fa-check me-2 text-success"></i>Multiple visualization techniques applied</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Recommendations:</h5>
+                                <ul class="list-unstyled">
+                                    {% if prediction == 'REAL_HUMAN' %}
+                                        <li><i class="fas fa-info-circle me-2 text-info"></i>Audio appears authentic</li>
+                                        <li><i class="fas fa-info-circle me-2 text-info"></i>No further verification needed</li>
+                                    {% else %}
+                                        <li><i class="fas fa-exclamation-circle me-2 text-warning"></i>Consider additional verification</li>
+                                        <li><i class="fas fa-exclamation-circle me-2 text-warning"></i>Cross-reference with other sources</li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="text-center mb-5">
+                    <a href="/" class="btn btn-primary btn-lg me-3">
+                        <i class="fas fa-home me-2"></i>Back to Home
+                    </a>
+                    <a href="/audio" class="btn btn-success btn-lg">
+                        <i class="fas fa-microphone me-2"></i>Analyze Another Audio
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
