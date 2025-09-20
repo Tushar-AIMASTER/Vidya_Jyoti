@@ -3,238 +3,267 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Audio Detection - Vidya Jyoti</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <title>Audio AI Detection</title>
     <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            line-height: 1.6;
         }
         
-        .upload-zone {
-            border: 3px dashed #28a745;
-            border-radius: 20px;
-            padding: 3rem 2rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px 0;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #00ffff, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.8;
+        }
+        
+        .upload-section {
             background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            border: 2px dashed rgba(0, 255, 255, 0.3);
+            transition: all 0.3s ease;
         }
         
-        .upload-zone:hover {
-            border-color: #20c997;
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-5px);
+        .upload-section:hover {
+            border-color: rgba(0, 255, 255, 0.6);
+            box-shadow: 0 10px 30px rgba(0, 255, 255, 0.1);
         }
         
-        .upload-zone.dragover {
-            border-color: #20c997;
-            background: rgba(32, 201, 151, 0.2);
+        .file-input {
+            display: none;
         }
         
-        .card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        .upload-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #00ffff, #0080ff);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 600;
+            border: none;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        
+        .upload-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 128, 255, 0.3);
+        }
+        
+        .file-info {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(0, 255, 255, 0.1);
+            border-radius: 10px;
+            display: none;
+        }
+        
+        .analyze-button {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            margin-top: 15px;
+            display: none;
+            transition: all 0.3s ease;
+        }
+        
+        .analyze-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(255, 107, 107, 0.3);
+        }
+        
+        .loading {
+            display: none;
+            margin: 20px 0;
+        }
+        
+        .spinner {
+            border: 4px solid rgba(0, 255, 255, 0.1);
+            border-left: 4px solid #00ffff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error-message {
+            background: rgba(255, 107, 107, 0.1);
+            border: 1px solid rgba(255, 107, 107, 0.3);
+            color: #ff6b6b;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            display: none;
+        }
+        
+        .supported-formats {
+            margin-top: 30px;
+            text-align: center;
+            opacity: 0.7;
+        }
+        
+        .formats-list {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .format-badge {
+            background: rgba(0, 255, 255, 0.2);
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.9em;
+        }
+        
+        .navigation {
+            text-align: center;
+            margin-top: 40px;
+        }
+        
+        .nav-link {
+            display: inline-block;
+            color: #00ffff;
+            text-decoration: none;
+            margin: 0 15px;
+            padding: 10px 20px;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            background: rgba(0, 255, 255, 0.1);
+            border-color: #00ffff;
         }
     </style>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-success">
-        <div class="container">
-            <a class="navbar-brand" href="/">
-                <i class="fas fa-shield-alt me-2"></i>
-                <strong>Vidya Jyoti</strong>
-            </a>
-            <div class="navbar-nav ms-auto">
-                <a class="nav-link" href="/">
-                    <i class="fas fa-home me-1"></i>Back to Home
-                </a>
-            </div>
+    <div class="container">
+        <div class="header">
+            <h1>AI Audio Detection</h1>
+            <p>Upload an audio file to detect if it's AI-generated or real human speech</p>
         </div>
-    </nav>
-
-    <div class="container mt-5">
-        <div class="row justify-content-center">
-            <div class="col-lg-8">
-                <div class="card border-0">
-                    <div class="card-header bg-success text-white">
-                        <div class="text-center">
-                            <i class="fas fa-microphone fa-3x mb-3"></i>
-                            <h2>AI Audio Deepfake Detection</h2>
-                            <p class="mb-0">Upload an audio file to detect if it's AI-generated or real human voice</p>
-                        </div>
-                    </div>
-                    <div class="card-body p-5">
-                        <form id="audioForm" enctype="multipart/form-data">
-                            <div class="upload-zone" id="uploadZone">
-                                <div class="text-center">
-                                    <i class="fas fa-cloud-upload-alt fa-4x text-success mb-4"></i>
-                                    <h4>Drag & Drop Audio File Here</h4>
-                                    <p class="text-muted">Or click to browse files</p>
-                                    <div class="supported-formats mt-3">
-                                        <span class="badge bg-light text-dark me-2">MP3</span>
-                                        <span class="badge bg-light text-dark me-2">WAV</span>
-                                        <span class="badge bg-light text-dark me-2">FLAC</span>
-                                        <span class="badge bg-light text-dark me-2">M4A</span>
-                                        <span class="badge bg-light text-dark me-2">OGG</span>
-                                    </div>
-                                </div>
-                                <input type="file" id="audioFile" name="file" class="d-none" 
-                                       accept=".mp3,.wav,.flac,.m4a,.ogg">
-                            </div>
-                            
-                            <div class="mt-4 text-center">
-                                <button type="submit" class="btn btn-success btn-lg" id="analyzeBtn" disabled>
-                                    <span class="spinner-border spinner-border-sm d-none" id="spinner"></span>
-                                    <i class="fas fa-brain me-2"></i>Analyze Audio
-                                </button>
-                            </div>
-                        </form>
-                        
-                        <div id="fileInfo" class="mt-3 d-none">
-                            <div class="alert alert-info">
-                                <i class="fas fa-file-audio me-2"></i>
-                                <span id="fileName"></span>
-                                <button type="button" class="btn btn-sm btn-outline-danger float-end" id="removeFile">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+        
+        <div class="upload-section">
+            <form id="uploadForm" enctype="multipart/form-data" method="post" action="/upload">
+                <input type="file" id="audioFile" name="file" class="file-input" accept=".wav,.mp3,.flac,.ogg,.m4a">
+                <label for="audioFile" class="upload-button">
+                    📁 Choose Audio File
+                </label>
+                
+                <div id="fileInfo" class="file-info">
+                    <p id="fileName"></p>
+                    <button type="submit" id="analyzeBtn" class="analyze-button">🔍 Analyze Audio</button>
                 </div>
                 
-                <!-- Features Info -->
-                <div class="card mt-4">
-                    <div class="card-body">
-                        <h5><i class="fas fa-info-circle me-2"></i>How It Works</h5>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <ul class="list-unstyled">
-                                    <li><i class="fas fa-check text-success me-2"></i>Advanced audio feature extraction</li>
-                                    <li><i class="fas fa-check text-success me-2"></i>MFCC and spectral analysis</li>
-                                    <li><i class="fas fa-check text-success me-2"></i>Machine learning classification</li>
-                                </ul>
-                            </div>
-                            <div class="col-md-6">
-                                <ul class="list-unstyled">
-                                    <li><i class="fas fa-check text-success me-2"></i>Waveform visualization</li>
-                                    <li><i class="fas fa-check text-success me-2"></i>Spectrogram analysis</li>
-                                    <li><i class="fas fa-check text-success me-2"></i>Confidence scoring</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
+                <div id="loading" class="loading">
+                    <div class="spinner"></div>
+                    <p>Analyzing audio... Please wait</p>
                 </div>
+                
+                <div id="errorMessage" class="error-message"></div>
+            </form>
+        </div>
+        
+        <div class="supported-formats">
+            <p>Supported formats:</p>
+            <div class="formats-list">
+                <span class="format-badge">WAV</span>
+                <span class="format-badge">MP3</span>
+                <span class="format-badge">FLAC</span>
+                <span class="format-badge">OGG</span>
+                <span class="format-badge">M4A</span>
             </div>
+        </div>
+        
+        <div class="navigation">
+            <a href="/" class="nav-link">🏠 Home</a>
+            <a href="/result" class="nav-link">📊 Results</a>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const uploadZone = document.getElementById('uploadZone');
-            const fileInput = document.getElementById('audioFile');
-            const form = document.getElementById('audioForm');
-            const analyzeBtn = document.getElementById('analyzeBtn');
-            const fileInfo = document.getElementById('fileInfo');
-            const fileName = document.getElementById('fileName');
-            const removeFile = document.getElementById('removeFile');
-            const spinner = document.getElementById('spinner');
-
-            // File selection
-            uploadZone.addEventListener('click', () => fileInput.click());
-            fileInput.addEventListener('change', handleFileSelect);
-
-            // Drag and drop
-            uploadZone.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                uploadZone.classList.add('dragover');
-            });
-
-            uploadZone.addEventListener('dragleave', () => {
-                uploadZone.classList.remove('dragover');
-            });
-
-            uploadZone.addEventListener('drop', (e) => {
-                e.preventDefault();
-                uploadZone.classList.remove('dragover');
-                const files = e.dataTransfer.files;
-                if (files.length > 0) {
-                    handleFileSelect({ target: { files } });
-                }
-            });
-
-            // Remove file
-            removeFile.addEventListener('click', () => {
-                fileInput.value = '';
-                fileInfo.classList.add('d-none');
-                analyzeBtn.disabled = true;
-            });
-
-            // Form submission
-            form.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                
-                if (!fileInput.files[0]) return;
-                
-                analyzeBtn.disabled = true;
-                spinner.classList.remove('d-none');
-                
-                try {
-                    const formData = new FormData();
-                    formData.append('file', fileInput.files[0]);
-                    
-                    const response = await fetch('/upload', {
-                        method: 'POST',
-                        body: formData,
-                        redirect: 'follow'  // Follow redirects automatically
-                    });
-                    
-                    if (response.ok) {
-                        // Redirect to the audio result page
-                        window.location.href = '/audio_result';
-                    } else {
-                        const error = await response.json();
-                        alert('Error: ' + error.error);
-                    }
-                } catch (error) {
-                    alert('Error uploading file: ' + error.message);
-                } finally {
-                    analyzeBtn.disabled = false;
-                    spinner.classList.add('d-none');
-                }
-            });
-
-            function handleFileSelect(event) {
-                const file = event.target.files[0];
-                if (file) {
-                    const allowedTypes = ['audio/mp3', 'audio/mpeg', 'audio/wav', 'audio/flac', 'audio/m4a', 'audio/ogg'];
-                    const allowedExtensions = ['.mp3', '.wav', '.flac', '.m4a', '.ogg'];
-                    
-                    const fileName = file.name.toLowerCase();
-                    const isValidExtension = allowedExtensions.some(ext => fileName.endsWith(ext));
-                    
-                    if (!isValidExtension) {
-                        alert('Please select a valid audio file (MP3, WAV, FLAC, M4A, OGG)');
-                        return;
-                    }
-                    
-                    if (file.size > 50 * 1024 * 1024) { // 50MB limit
-                        alert('File size must be less than 50MB');
-                        return;
-                    }
-                    
-                    document.getElementById('fileName').textContent = file.name;
-                    fileInfo.classList.remove('d-none');
-                    analyzeBtn.disabled = false;
-                }
+        const fileInput = document.getElementById('audioFile');
+        const fileInfo = document.getElementById('fileInfo');
+        const fileName = document.getElementById('fileName');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const uploadForm = document.getElementById('uploadForm');
+        const loading = document.getElementById('loading');
+        const errorMessage = document.getElementById('errorMessage');
+        
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                fileName.textContent = `Selected: ${file.name} (${(file.size / (1024*1024)).toFixed(2)} MB)`;
+                fileInfo.style.display = 'block';
+                analyzeBtn.style.display = 'inline-block';
+                errorMessage.style.display = 'none';
             }
         });
+        
+        uploadForm.addEventListener('submit', function(e) {
+            const file = fileInput.files[0];
+            if (!file) {
+                e.preventDefault();
+                showError('Please select an audio file first');
+                return;
+            }
+            
+            // Show loading
+            loading.style.display = 'block';
+            analyzeBtn.disabled = true;
+            analyzeBtn.textContent = 'Processing...';
+            errorMessage.style.display = 'none';
+        });
+        
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+            loading.style.display = 'none';
+            analyzeBtn.disabled = false;
+            analyzeBtn.textContent = '🔍 Analyze Audio';
+        }
     </script>
 </body>
 </html>

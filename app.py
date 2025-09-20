@@ -60,13 +60,13 @@ def extract_audio_features(audio_path):
     y, sr = librosa.load(audio_path)
 
     features = {
-        'duration': len(y) / sr,
-        'sample_rate': sr,
-        'rms_energy': np.mean(librosa.feature.rms(y=y)),
-        'spectral_centroid': np.mean(librosa.feature.spectral_centroid(y=y, sr=sr)),
-        'spectral_bandwidth': np.mean(librosa.feature.spectral_bandwidth(y=y, sr=sr)),
-        'zero_crossing_rate': np.mean(librosa.feature.zero_crossing_rate(y)),
-        'tempo': librosa.beat.tempo(y=y, sr=sr)[0]
+        'duration': float(len(y) / sr),
+        'sample_rate': int(sr),
+        'rms_energy': float(np.mean(librosa.feature.rms(y=y))),
+        'spectral_centroid': float(np.mean(librosa.feature.spectral_centroid(y=y, sr=sr))),
+        'spectral_bandwidth': float(np.mean(librosa.feature.spectral_bandwidth(y=y, sr=sr))),
+        'zero_crossing_rate': float(np.mean(librosa.feature.zero_crossing_rate(y))),
+        'tempo': float(librosa.beat.tempo(y=y, sr=sr)[0])
     }
 
     return features
@@ -214,15 +214,21 @@ def upload_file():
 
             # Generate visualizations
             base_name = os.path.splitext(filename)[0]
-            waveform_img = os.path.join('static', f'waveform_{base_name}.png')
-            mfcc_img = os.path.join('static', f'mfcc_{base_name}.png')
-            spectrogram_img = os.path.join('static', f'spectrogram_{base_name}.png')
-            frequency_img = os.path.join('static', f'frequency_{base_name}.png')
+            waveform_img = f'waveform_{base_name}.png'
+            mfcc_img = f'mfcc_{base_name}.png'
+            spectrogram_img = f'spectrogram_{base_name}.png'
+            frequency_img = f'frequency_{base_name}.png'
+            
+            # Full paths for saving
+            waveform_path = os.path.join('static', waveform_img)
+            mfcc_path = os.path.join('static', mfcc_img)
+            spectrogram_path = os.path.join('static', spectrogram_img)
+            frequency_path = os.path.join('static', frequency_img)
 
-            plot_waveform(filepath, waveform_img)
-            plot_mfcc(filepath, mfcc_img)
-            plot_spectrogram(filepath, spectrogram_img)
-            plot_frequency_analysis(filepath, frequency_img)
+            plot_waveform(filepath, waveform_path)
+            plot_mfcc(filepath, mfcc_path)
+            plot_spectrogram(filepath, spectrogram_path)
+            plot_frequency_analysis(filepath, frequency_path)
 
             # AI Detection (using mock function)
             detection_result = mock_deepfake_detection(filepath)
