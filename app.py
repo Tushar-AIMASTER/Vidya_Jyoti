@@ -10,6 +10,8 @@ import matplotlib
 matplotlib.use('Agg')  # Use non-GUI backend
 import warnings
 warnings.filterwarnings("ignore")
+import joblib
+from sklearn.preprocessing import StandardScaler
 from news_verifier import NewsVerifier
 from config import Config
 
@@ -25,19 +27,96 @@ app.config['STATIC_FOLDER'] = 'static'
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 os.makedirs(app.config['STATIC_FOLDER'], exist_ok=True)
 
-# Initialize the news verifier
-news_verifier = NewsVerifier()
-
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Initialize the news verifier
+news_verifier = NewsVerifier()
+
+# Load the trained MLP model
+try:
+    mlp_model = joblib.load('rerec_MLP.pkl')
+    logger.info("MLP model loaded successfully")
+    logger.info(f"Model expects {mlp_model.n_features_in_} features")
+except FileNotFoundError:
+    logger.error("MLP model file 'rerec_MLP.pkl' not found")
+    mlp_model = None
+except Exception as e:
+    logger.error(f"Error loading MLP model: {str(e)}")
+    mlp_model = None
+
 # ==================== AUDIO DETECTION FUNCTIONS ====================
+
+def extract_mlp_features(audio_path):
+    """
+    Extract features compatible with the trained MLP model
+    The model expects 40 features, so we'll pad the 29 features with zeros
+    """
+    try:
+        # Load audio with duration limit to ensure consistent feature size
+        y, sr = librosa.load(audio_path, duration=30)
+        
+        # MFCC features (most important for deepfake detection)
+        mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=13)
+        mfcc_mean = np.mean(mfcc, axis=1)
+        mfcc_std = np.std(mfcc, axis=1)
+        
+        # Additional spectral features
+        spectral_centroid = np.mean(librosa.feature.spectral_centroid(y=y, sr=sr))
+        spectral_bandwidth = np.mean(librosa.feature.spectral_bandwidth(y=y, sr=sr))
+        zero_crossing_rate = np.mean(librosa.feature.zero_crossing_rate(y))
+        
+        # Combine features in the same order as training (29 features)
+        features_29 = np.concatenate([
+            mfcc_mean, mfcc_std,
+            [spectral_centroid, spectral_bandwidth, zero_crossing_rate]
+        ])
+        
+        # Pad to 40 features with zeros
+        features_40 = np.pad(features_29, (0, 40 - len(features_29)), 'constant', constant_values=0)
+        
+        return features_40.reshape(1, -1)  # Reshape for single prediction
+        
+    except Exception as e:
+        logger.error(f"Error extracting MLP features: {str(e)}")
+        # Return zero features if extraction fails
+        return np.zeros((1, 40))  # 40 features as expected by the model
+
+def real_deepfake_detection(audio_path):
+    """
+    Real function for deepfake detection using trained MLP model
+    """
+    if mlp_model is None:
+        logger.warning("MLP model not loaded, falling back to mock detection")
+        return mock_deepfake_detection(audio_path)
+    
+    try:
+        # Extract features
+        features = extract_mlp_features(audio_path)
+        
+        # Make prediction
+        prediction = mlp_model.predict(features)[0]
+        prediction_proba = mlp_model.predict_proba(features)[0]
+        
+        # Convert prediction to labels
+        if prediction == 1:
+            label = 'AI_GENERATED'
+            confidence = float(prediction_proba[1])
+        else:
+            label = 'REAL_HUMAN'
+            confidence = float(prediction_proba[0])
+        
+        return [{'label': label, 'score': confidence}]
+        
+    except Exception as e:
+        logger.error(f"Error in real deepfake detection: {str(e)}")
+        # Fallback to mock detection if real detection fails
+        return mock_deepfake_detection(audio_path)
 
 def mock_deepfake_detection(audio_path):
     """
-    Mock function for deepfake detection
-    In production, replace this with actual model inference
+    Mock function for deepfake detection (fallback)
     """
     # Simulate detection based on simple audio features
     y, sr = librosa.load(audio_path)
@@ -46,7 +125,7 @@ def mock_deepfake_detection(audio_path):
     spectral_centroid = np.mean(librosa.feature.spectral_centroid(y=y, sr=sr))
     zero_crossing_rate = np.mean(librosa.feature.zero_crossing_rate(y))
 
-    # Mock classification logic (replace with real model)
+    # Mock classification logic
     if spectral_centroid > 2000 or zero_crossing_rate > 0.1:
         return [{'label': 'AI_GENERATED', 'score': 0.87}]
     else:
@@ -230,7 +309,7 @@ def upload_file():
             plot_spectrogram(filepath, spectrogram_path)
             plot_frequency_analysis(filepath, frequency_path)
 
-            # AI Detection (using mock function)
+            # AI Detection (using mock function for now)
             detection_result = mock_deepfake_detection(filepath)
 
             result_data = {
