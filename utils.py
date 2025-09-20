@@ -10,10 +10,10 @@ class NewsUtils:
     def clean_headline(headline):
         """Clean and normalize headline text"""
         # Remove extra whitespace
-        headline = re.sub(r'\\s+', ' ', headline.strip())
+        headline = re.sub(r'\s+', ' ', headline.strip())
         
         # Remove special characters that might interfere with search
-        headline = re.sub(r'[^a-zA-Z0-9\\s\\-.,!?]', '', headline)
+        headline = re.sub(r'[^a-zA-Z0-9\s\-.,!?]', '', headline)
         
         return headline
     
@@ -31,17 +31,17 @@ class NewsUtils:
         }
         
         # Extract potential person names (capitalized words)
-        person_pattern = r'\\b[A-Z][a-z]+\\s+[A-Z][a-z]+\\b'
+        person_pattern = r'\b[A-Z][a-z]+\s+[A-Z][a-z]+\b'
         entities['persons'] = re.findall(person_pattern, text)
         
         # Extract potential locations
         location_keywords = ['City', 'State', 'Country', 'Street', 'Avenue', 'Road']
         for keyword in location_keywords:
-            matches = re.findall(rf'\\b\\w+\\s+{keyword}\\b', text, re.IGNORECASE)
+            matches = re.findall(rf'\b\w+\s+{keyword}\b', text, re.IGNORECASE)
             entities['locations'].extend(matches)
         
         # Extract dates
-        date_pattern = r'\\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\\s+\\d{1,2},?\\s+\\d{4}\\b'
+        date_pattern = r'\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},?\s+\d{4}\b'
         entities['dates'] = re.findall(date_pattern, text, re.IGNORECASE)
         
         return entities

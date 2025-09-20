@@ -74,7 +74,17 @@ class NewsVerifier:
             
             # Extract keywords from headline for search
             keywords = self._extract_keywords(headline)
-            search_query = ' '.join(keywords[:5])  # Use top 5 keywords
+            
+            # Ensure we have a valid search query
+            if not keywords or len(keywords) < 1:
+                # Fallback: use first few words of headline
+                words = headline.split()[:3]
+                search_query = ' '.join(words)
+            else:
+                # Use only the most important keywords (max 3) to avoid overly specific searches
+                search_query = ' '.join(keywords[:3])
+            
+            self.logger.info(f"Searching NewsAPI with query: '{search_query}'")
             
             # Search for articles
             articles = self.newsapi.get_everything(
@@ -87,25 +97,41 @@ class NewsVerifier:
             result['details']['total_sources_checked'] += len(articles['articles'])
             
             for article in articles['articles']:
-                similarity = fuzz.ratio(headline.lower(), article['title'].lower())
-                
-                if similarity > 70:  # High similarity threshold
-                    result['sources_found'].append({
-                        'source': article['source']['name'],
-                        'title': article['title'],
-                        'url': article['url'],
-                        'published_at': article['publishedAt'],
-                        'similarity_score': similarity,
-                        'description': article['description']
-                    })
+                try:
+                    # Use multiple similarity methods for better matching
+                    title = article['title'].lower()
+                    headline_lower = headline.lower()
                     
-                    result['similar_headlines'].append({
-                        'title': article['title'],
-                        'similarity': similarity,
-                        'source': article['source']['name']
-                    })
+                    ratio = fuzz.ratio(headline_lower, title)
+                    partial = fuzz.partial_ratio(headline_lower, title)
+                    token_sort = fuzz.token_sort_ratio(headline_lower, title)
                     
-                    result['details']['matching_sources'] += 1
+                    # Use the highest similarity score
+                    similarity = max(ratio, partial, token_sort)
+                    
+                    self.logger.info(f"Article similarity: {similarity}% (ratio:{ratio}, partial:{partial}, token:{token_sort}) - {article['title'][:50]}...")
+                    
+                    if similarity > 35:  # Much lower threshold for better matching
+                        self.logger.info(f"Adding matching source: {article['source']['name']}")
+                        result['sources_found'].append({
+                            'source': article['source']['name'],
+                            'title': article['title'],
+                            'url': article['url'],
+                            'published_at': article['publishedAt'],
+                            'similarity_score': similarity,
+                            'description': article['description']
+                        })
+                        
+                        result['similar_headlines'].append({
+                            'title': article['title'],
+                            'similarity': similarity,
+                            'source': article['source']['name']
+                        })
+                        
+                        result['details']['matching_sources'] += 1
+                except Exception as e:
+                    self.logger.error(f"Error processing article: {e}")
+                    continue
             
         except Exception as e:
             self.logger.error(f"NewsAPI verification failed: {str(e)}")
@@ -127,9 +153,18 @@ class NewsVerifier:
                     result['details']['total_sources_checked'] += len(feed.entries)
                     
                     for entry in feed.entries:
-                        similarity = fuzz.ratio(headline.lower(), entry.title.lower())
+                        # Use multiple similarity methods for better matching
+                        entry_title = entry.title.lower()
+                        headline_lower = headline.lower()
                         
-                        if similarity > 60:  # Moderate similarity threshold for RSS
+                        ratio = fuzz.ratio(headline_lower, entry_title)
+                        partial = fuzz.partial_ratio(headline_lower, entry_title)
+                        token_sort = fuzz.token_sort_ratio(headline_lower, entry_title)
+                        
+                        # Use the highest similarity score
+                        similarity = max(ratio, partial, token_sort)
+                        
+                        if similarity > 30:  # Lower threshold for RSS feeds
                             result['sources_found'].append({
                                 'source': feed.feed.get('title', 'RSS Feed'),
                                 'title': entry.title,
@@ -201,11 +236,11 @@ class NewsVerifier:
         # Base score from number of matching sources
         matching_sources = result['details']['matching_sources']
         if matching_sources >= 3:
-            score += 40
+            score += 50
         elif matching_sources >= 2:
-            score += 25
+            score += 35
         elif matching_sources >= 1:
-            score += 10
+            score += 20
         
         # Score from similarity scores
         if result['similar_headlines']:
@@ -268,7 +303,7 @@ class NewsVerifier:
         description = best_source.get('description', '')
         if description:
             # Simple location extraction (can be improved with NLP)
-            locations = re.findall(r'\\b(?:in|at)\\s+([A-Z][a-zA-Z\\s]+?)(?:[,.]|\\s+(?:said|reported|according))', description)
+            locations = re.findall(r'\b(?:in|at)\s+([A-Z][a-zA-Z\s]+?)(?:[,.]|\s+(?:said|reported|according))', description)
             if locations:
                 result['summary']['where_happened'] = f"Location mentioned: {locations[0].strip()}"
             else:
@@ -285,10 +320,18 @@ class NewsVerifier:
     def _extract_keywords(self, text):
         """Extract keywords from text"""
         # Remove common stop words and extract meaningful terms
-        stop_words = {'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should'}
+        stop_words = {'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should', 'breaking', 'news', 'update', 'report', 'says'}
         
         # Clean and split text
-        words = re.findall(r'\\b\\w+\\b', text.lower())
+        words = re.findall(r'\b\w+\b', text.lower())
         keywords = [word for word in words if word not in stop_words and len(word) > 2]
         
-        return keywords[:10]  # Return top 10 keywords
+        # Prioritize important keywords (nouns, locations, events)
+        priority_keywords = []
+        for word in keywords:
+            if len(word) > 4 or word in ['war', 'fire', 'crash', 'storm', 'flood', 'covid', 'virus']:
+                priority_keywords.append(word)
+        
+        # Return priority keywords first, then others
+        result = priority_keywords + [w for w in keywords if w not in priority_keywords]
+        return result[:10]  # Return top 10 keywords
