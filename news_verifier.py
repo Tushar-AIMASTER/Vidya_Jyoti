@@ -320,7 +320,7 @@ class NewsVerifier:
     def _extract_keywords(self, text):
         """Extract keywords from text"""
         # Remove common stop words and extract meaningful terms
-        stop_words = {'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should', 'breaking', 'news', 'update', 'report', 'says'}
+        stop_words = {'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should', 'breaking', 'news', 'update', 'report', 'says', 'share', 'warm', 'hugs', 'snubbing', 'after', 'with', 'in', 'after', 'leaves', 'two', 'jawans', 'dead', 'locals', 'protest', 'nambol', 'assam', 'rifles', 'ambush'}
         
         # Clean and split text
         words = re.findall(r'\b\w+\b', text.lower())
@@ -329,7 +329,7 @@ class NewsVerifier:
         # Prioritize important keywords (nouns, locations, events)
         priority_keywords = []
         for word in keywords:
-            if len(word) > 4 or word in ['war', 'fire', 'crash', 'storm', 'flood', 'covid', 'virus']:
+            if len(word) > 4 or word in ['war', 'fire', 'crash', 'storm', 'flood', 'covid', 'virus', 'india', 'manipur', 'assam', 'kashmir', 'pakistan', 'china', 'bengal', 'maharashtra', 'gujarat', 'rajasthan', 'punjab', 'haryana', 'delhi', 'mumbai', 'bangalore', 'hyderabad', 'chennai', 'kolkata', 'ahmedabad', 'pune', 'jaipur', 'lucknow', 'kanpur', 'nagpur', 'indore', 'bhopal', 'ludhiana', 'agra', 'nashik', 'faridabad', 'meerut', 'rajkot', 'kalyan', 'vasai', 'varanasi', 'srinagar', 'aurangabad', 'navi', 'solapur', 'vadodara', 'patna', 'meerut', 'rajkot', 'kalyan', 'vasai', 'varanasi', 'srinagar', 'aurangabad', 'navi', 'solapur', 'vadodara', 'patna']:
                 priority_keywords.append(word)
         
         # Return priority keywords first, then others
