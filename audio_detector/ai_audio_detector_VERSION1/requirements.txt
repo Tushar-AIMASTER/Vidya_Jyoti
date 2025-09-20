@@ -1,9 +1,0 @@
-Flask
-librosa
-matplotlib
-numpy
-transformers
-torch
-soundfile
-Werkzeug
-Jinja2
