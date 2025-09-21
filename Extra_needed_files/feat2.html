@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>TruthLens - AI Misinformation Detector</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',sans-serif;}
+    body{
+      background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+      min-height:100vh;
+      color:#fff;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+    }
+    h1,h2{font-weight:700;text-align:center;}
+    h1{font-size:3rem;margin-top:20px;text-shadow:0 0 12px rgba(0,255,200,0.6);}
+    h2{margin-bottom:10px;color:#ffe;}
+    p.tagline{margin:10px 0 20px;text-align:center;color:#ccc;font-size:1.2rem;}
+
+    .container{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+      gap:20px;
+      max-width:1100px;
+      width:100%;
+      padding:20px;
+    }
+    .card{
+      background:linear-gradient(145deg,rgba(255,255,255,0.1),rgba(0,0,0,0.3));
+      border-radius:16px;
+      padding:20px;
+      text-align:center;
+      box-shadow:0 8px 20px rgba(0,0,0,0.4);
+      transition:transform 0.3s,box-shadow 0.3s;
+    }
+    .card:hover{transform:translateY(-6px);box-shadow:0 12px 25px rgba(0,255,200,0.3);}
+    input,textarea{
+      width:100%;margin-top:10px;padding:10px;
+      border-radius:8px;border:none;outline:none;font-size:1rem;
+    }
+    textarea{resize:none;height:80px;}
+    button{
+      margin-top:12px;padding:10px 16px;border:none;border-radius:8px;
+      font-size:1rem;font-weight:600;color:#052024;
+      background:linear-gradient(90deg,#00f5a0,#00d9f5);
+      cursor:pointer;transition:opacity 0.3s;
+    }
+    button:hover{opacity:0.85;}
+
+    #results{
+      margin:20px auto;max-width:900px;width:90%;
+      background:rgba(255,255,255,0.08);border-radius:14px;
+      padding:20px;text-align:center;box-shadow:0 6px 18px rgba(0,0,0,0.4);
+      display:none;
+    }
+    .score{font-size:2rem;margin-bottom:12px;color:#00f5a0;text-shadow:0 0 8px rgba(0,255,200,0.7);}
+    .breakdown{display:flex;justify-content:space-around;margin-top:10px;}
+    .break-item{flex:1;margin:6px;padding:10px;border-radius:10px;background:rgba(255,255,255,0.07);}
+    
+    /* Features Section */
+    .features{
+      max-width:1000px;
+      margin:40px auto;
+      padding:20px;
+      text-align:center;
+    }
+    .features h2{
+      font-size:2rem;
+      margin-bottom:20px;
+      text-shadow:0 0 8px rgba(255,255,200,0.7);
+    }
+    .feature-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+      gap:20px;
+    }
+    .feature{
+      background:linear-gradient(145deg,rgba(0,255,200,0.1),rgba(0,0,0,0.3));
+      padding:20px;
+      border-radius:12px;
+      box-shadow:0 6px 15px rgba(0,0,0,0.3);
+      transition:transform 0.3s;
+    }
+    .feature:hover{transform:scale(1.05);}
+    .feature h3{margin-bottom:10px;color:#00f5d4;}
+    .feature p{font-size:0.95rem;color:#eee;}
+    
+    footer{margin-top:auto;padding:20px;text-align:center;font-size:0.9rem;color:#aaa;}
+  </style>
+</head>
+<body>
+
+  <h1>TruthLens 🔍</h1>
+  <p class="tagline">AI-powered tool to detect fake news in text, images, and audio</p>
+
+  <div class="container">
+    <div class="card">
+      <h2>🖼️ Analyze Image</h2>
+      <input type="file" id="imageInput" accept="image/*">
+      <button onclick="analyze('image')">Analyze Image</button>
+    </div>
+    <div class="card">
+      <h2>🎙️ Analyze Audio</h2>
+      <input type="file" id="audioInput" accept="audio/*">
+      <button onclick="analyze('audio')">Analyze Audio</button>
+    </div>
+    <div class="card">
+      <h2>📰 Check Text</h2>
+      <textarea id="textInput" placeholder="Paste headline or claim..."></textarea>
+      <button onclick="analyze('text')">Check Claim</button>
+    </div>
+  </div>
+
+  <!-- Features Section -->
+  <section class="features">
+    <h2>✨ Key Features</h2>
+    <div class="feature-grid">
+      <div class="feature">
+        <h3>Text Analysis</h3>
+        <p>Detects fake news and misleading claims in headlines or articles using AI fact-checking.</p>
+      </div>
+      <div class="feature">
+        <h3>Image Verification</h3>
+        <p>Checks for manipulated or deepfake images and verifies original sources.</p>
+      </div>
+      <div class="feature">
+        <h3>Audio Analysis</h3>
+        <p>Transcribes speech and identifies synthetic or tampered audio recordings.</p>
+      </div>
+      <div class="feature">
+        <h3>Trust Score</h3>
+        <p>Provides a clear reliability percentage with detailed breakdown of results.</p>
+      </div>
+      <div class="feature">
+        <h3>Explainable Results</h3>
+        <p>Highlights suspicious parts and explains why content may be untrustworthy.</p>
+      </div>
+      <div class="feature">
+        <h3>User-Friendly</h3>
+        <p>Interactive and colorful design for easy uploads and instant feedback.</p>
+      </div>
+    </div>
+  </section>
+
+  <div id="results">
+    <h2>Analysis Results</h2>
+    <div id="score" class="score">—</div>
+    <div class="breakdown" id="breakdown"></div>
+    <p id="explanation"></p>
+  </div>
+
+  <footer>© 2025 TruthLens · Built with AI · For a safer internet</footer>
+
+  <script>
+    function analyze(type){
+      const results=document.getElementById('results');
+      const scoreEl=document.getElementById('score');
+      const breakdownEl=document.getElementById('breakdown');
+      const explanationEl=document.getElementById('explanation');
+      results.style.display='block';
+      scoreEl.textContent="Analyzing "+type+"…";
+      setTimeout(()=>{
+        const score=Math.random();
+        scoreEl.textContent="Trust Score: "+Math.round(score*100)+"%";
+        breakdownEl.innerHTML='';
+        const parts=type==="image"?["Metadata","Forgery Check","Source Match"]:
+                    type==="audio"?["Transcript","Voice Check","Noise Analysis"]:
+                    ["Claim Match","Sentiment","Credibility"];
+        parts.forEach(p=>{
+          const div=document.createElement('div');
+          div.className="break-item";
+          div.innerHTML=`<strong>${p}</strong><br>${Math.round(Math.random()*100)}%`;
+          breakdownEl.appendChild(div);
+        });
+        explanationEl.textContent="(Demo) Real system would show AI fact-check, deepfake detection, and evidence links here.";
+      },1500);
+    }
+  </script>
+</body>
+</html>
