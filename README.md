@@ -16,12 +16,27 @@ The rapid spread of fake news and misinformation across digital platforms poses 
 
 ## ✨ Key Features
 
-- **AI-Powered Detection**: Advanced algorithms to identify potential misinformation
-- **Educational Insights**: Explanations of why content might be misleading
-- **Real-time Analysis**: Quick verification of encountered information
-- **User-Friendly Interface**: Accessible design for all digital literacy levels
-- **Credibility Assessment**: Comprehensive evaluation of content trustworthiness
-- **Educational Resources**: Tools to improve users' critical thinking skills
+News Headline Verification
+The news verification feature uses a multi-layered approach to analyze news headlines and provide a comprehensive authenticity score.
+
+Multi-Source Verification: The system checks headlines against multiple news sources, including a NewsAPI integration for real-time news and various RSS feeds.
+
+Fact-Checking: It searches for the headline and related topics on dedicated fact-checking websites to identify if the information has been previously verified or debunked.
+
+Authenticity Scoring: An authenticity score from 0 to 100 is calculated based on factors like the number of matching sources, headline similarity, and the reputation of the news outlets.
+
+Detailed Summary: The final result includes a detailed summary of the findings, providing context and origin information by answering the key journalistic questions: What, When, Where, and Why.
+
+Audio Deepfake Detection
+This feature analyzes uploaded audio files to determine if they are likely to be real human speech or AI-generated.
+
+Feature Extraction: The application uses the Librosa library to extract various audio features, such as MFCCs (Mel-Frequency Cepstral Coefficients), spectral centroid, and zero-crossing rate.
+
+Machine Learning Model: A pre-trained MLP (Multi-Layer Perceptron) model is used to classify the audio. The model has been trained to distinguish between real human voices and synthetic, AI-generated ones.
+
+Visual Analysis: To provide a comprehensive analysis, the application generates and displays several visualizations of the audio, including a waveform, a spectrogram, and an MFCC features plot.
+
+User-Friendly Interface: The web interface makes it easy to upload audio files and view the results, which include the prediction (e.g., 'REAL_HUMAN' or 'AI_GENERATED'), a confidence score, and the visual analysis.
 
 ## 🛠️ Technology Stack
 
@@ -44,8 +59,8 @@ The rapid spread of fake news and misinformation across digital platforms poses 
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/your-username/ai-misinformation-detector.git
-cd ai-misinformation-detector
+git clone https://github.com/Tushar-AIMASTER/Vidya_Jyoti.git
+cd Vidya_Jyoti
 ```
 
 2. Install dependencies:
@@ -104,24 +119,33 @@ GET /api/education/techniques
 ai-misinformation-detector/
 ├── README.md
 ├── requirements.txt
-├── .env.example
+├── rerec_MLP.pkl
 ├── app.py
-├── src/
-│   ├── models/
-│   ├── api/
-│   ├── utils/
-│   └── config/
+├── utils.py
+├── news_verifier.py
+├── config/
 ├── static/
+│   ├── script.js
+│   ├── style.css
+│   ├── tushar.jpg
+│   ├── Niharika.jpg
+│   ├── pragati.jpg
+│   ├── shivani.jpg
+│   └── ankita.jpg
+│
 ├── templates/
-├── tests/
-├── docs/
-└── deployment/
+│   ├── index.html
+│   ├── audio.html
+│   ├── audio_result.html
+└── .env
+
+
 ```
 
 ## 🎯 Core Components
 
 ### 1. Misinformation Detection Engine
-- NLP models for text analysis
+-  text analysis
 - Image verification algorithms
 - Pattern recognition systems
 
@@ -140,34 +164,6 @@ ai-misinformation-detector/
 - Multi-language support
 - Accessibility features
 
-## 🧪 Testing
-
-Run the test suite:
-```bash
-python -m pytest tests/
-```
-
-Run specific tests:
-```bash
-python -m pytest tests/test_detection.py
-```
-
-## 📊 Performance Metrics
-
-- **Accuracy**: [Your model accuracy]
-- **Processing Time**: [Average response time]
-- **Supported Formats**: Text, Images, URLs, Social Media Posts
-- **Languages**: English, Hindi, [Other supported languages]
-
-## 🤝 Contributing
-
-We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
 
 ## 🔒 Privacy & Security
 
@@ -176,28 +172,21 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 - Secure API endpoints
 - GDPR compliance
 
-## 📄 License
-
-This project is licensed under the [Your License] - see the [LICENSE](LICENSE) file for details.
 
 ## 👥 Team
 
-- **[Your Name]** - Project Lead & Full Stack Developer
-- **[Team Member 2]** - AI/ML Engineer
-- **[Team Member 3]** - Frontend Developer
+- **[Tushar Srivastava]** - Project Lead | Full Stack Developer | Core Programmer
+- **[Pragati Shukla]** - Frontend Developer 
+- **[Niharika Gupta]** - Frontend Developer
+- **[Ankita Sharma]** - Frontend Developer
+- **[Shivani Tripathi]** - Frontend Developer
 
 ## 🙏 Acknowledgments
 
 - Google Cloud Platform for AI/ML infrastructure
-- [Mention any datasets, APIs, or resources used]
-- Community contributors and testers
+- News.org API , Gnews API and Google API
 
-## 📞 Support
 
-For questions, issues, or suggestions:
-- **Email**: [your-email@domain.com]
-- **Issues**: [GitHub Issues](https://github.com/your-username/ai-misinformation-detector/issues)
-- **Documentation**: [Link to detailed docs]
 
 ## 🚀 Future Roadmap
 
@@ -208,6 +197,3 @@ For questions, issues, or suggestions:
 - [ ] Integration with social media platforms
 - [ ] Real-time monitoring dashboard
 
----
-
-**Built with ❤️ to combat misinformation and promote digital literacy in India**
